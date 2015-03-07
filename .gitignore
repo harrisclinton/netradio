@@ -2,3 +2,5 @@
 *.pyc
 netradio/gui/linowrite.ttf
 dist/
+build/
+netradio.egg-info/
