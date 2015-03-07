@@ -7,6 +7,9 @@ http://www.runeaudio.com/forum/my-solution-to-pops-and-clicks-t165.html
 
 The GUI is designed to give a retro feel which can be modified by replacing the included graphic files.
 
+There is a video of the GUI here:
+https://www.youtube.com/watch?v=7QYEEO6GmXI
+
 The current version requires Python 2.7.x, GObject, Gstreamer 1.0, the python bindings thereof, and PyGame.
 
 This has only been tested on Ubuntu Gnome 14.10 and Raspbian running the 3.18 kernel on a Rasberry Pi B+ with latest firmware as of 2015.3.6.
