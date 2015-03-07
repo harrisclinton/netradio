@@ -1,0 +1,5 @@
+include README.rst
+include LICENSE
+include netradio/gui/RadioBack.png
+include netradio/gui/RadioOverlay.png
+include netradio/gui/RadioPaper.png
