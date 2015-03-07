@@ -33,7 +33,7 @@ This font is "free for personal use" and therefore third party distribution righ
 For that reason, the font is not included in this archive and must be downloaded by each user for their own personal use, or replaced with an alternative. Download the font from the above URL and place the .ttf file in the gui directory.
 Optionally, use a different font. Place your font of choice in the gui directory and either rename it to linowrite.ttf or change the source to point to the new font.
 
-GIMP files used to create the GUI can be found in the assets directory.
+GIMP files used to create the GUI can be found in the assets directory at https://github.com/harrisclinton/netradio.git
 
 Roadmap:
 

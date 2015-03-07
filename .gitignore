@@ -1,3 +1,4 @@
 *~
 *.pyc
 netradio/gui/linowrite.ttf
+dist/
