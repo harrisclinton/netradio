@@ -2,7 +2,7 @@
 
 PyGame GUI for a Raspberry Pi based Net Radio device
 
-Version: 0.1.0, 2015.3.7
+Version: 0.2.0, 2015.3.7
 
 chris.harrington.jp@gmail.com
 
@@ -15,7 +15,7 @@ Things to do:
 	Further optimise screen refresh for Raspberry Pi - possibly use PyOpenGL
 		Done:Splice gui graphics more to avoid full screen blit
  	Further abstraction
-		Separate "player" class to allow easy swap of sound library
+		Done:Separate "player" class to allow easy swap of sound library
 		Separate class for all visuals to allow replacing GUI modules used
 		i.e. optionally replace PyGame with some other library
 	Parsing of playlist files to extract station name/url (.m3u, .pls, .xspf etc.)
@@ -38,13 +38,11 @@ import pygame, sys, platform, os
 from gi.repository import GObject, Gst
 from station import *
 from rgbcolors import *
+from player import *
 		
 class NetRadio():
 	
 	def __init__(self):
-
-		GObject.threads_init()
-		Gst.init(None)
 		
 		self.path = self.get_exec_path()
 		
@@ -98,12 +96,7 @@ class NetRadio():
 		self.radioface = pygame.image.load(self.path + '/gui/RadioOverlay.png')
 		self.surface.blit(self.radioback, self.screen_offset)
 		
-		self.player = Gst.ElementFactory.make('playbin', None)
-		
-		#GST sink must be specified on Raspberry Pi
-		if self.is_raspi:
-			output = Gst.ElementFactory.make('alsasink', None)
-			self.player.set_property('audio-sink', output)
+		self.player = Player(self.is_raspi)
 	
 	#Need to break event handler loop out to separate 
 	#function for cleanliness	
@@ -113,31 +106,18 @@ class NetRadio():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_DOWN:
 						#Going up!
-						direction = -1
-						self.animate_scroll(direction)
-						self.selected += 1
-						if self.selected == len(self.stations):
-							self.selected = 0
-						self.play()
+						self.increment_scroll(-1)
 					if event.key == pygame.K_UP:
-						direction = 1
-						self.animate_scroll(direction)
-						self.selected -= 1
-						if self.selected < 0:
-							self.selected = len(self.stations) - 1
-						self.play()
 						#Going down!
+						self.increment_scroll(1)
 					if event.key == pygame.K_ESCAPE:
-						self.player.set_state(Gst.State.NULL)
-						pygame.quit()
-						sys.exit()
+						self.quit()
 				if event.type == pygame.QUIT:
-					self.player.set_state(Gst.State.NULL)
-					pygame.quit()
-					sys.exit()
+					self.quit()
 											
 			self.updateScreen(self.text_offset[1])
 			self.clock.tick(self.fps)
+			print self.player.level_l, self.player.level_r
 		
 	def add_station(self, station_name, station_uri, user, password):
 		if self.verify_station(station_uri):
@@ -148,10 +128,22 @@ class NetRadio():
 		return True
 			
 	def play(self):
-		self.player.set_state(Gst.State.NULL)
-		self.player.set_property('uri', self.stations[self.selected].uri)
-		self.player.set_state(Gst.State.PLAYING)
+		self.player.play(self.stations[self.selected].uri)
 		
+	def stop(self):
+		self.player.stop()
+		
+	#Increment or decrement the station selection
+	def increment_scroll(self, direction):
+		self.animate_scroll(direction)
+		self.selected -= direction
+		if self.selected == len(self.stations):
+			self.selected = 0
+		if self.selected < 0:
+			self.selected = len(self.stations) - 1
+		self.play()		
+		
+	#Animate the station roll
 	def animate_scroll(self, direction):
 	
 		ypos = self.text_offset[1]
@@ -167,6 +159,7 @@ class NetRadio():
 		else:
 			pass
 
+	#Refresh the pygame display
 	def updateScreen(self, ypos):
 	
 		textmaster = pygame.Surface((365,100), pygame.SRCALPHA, 32)
@@ -227,3 +220,8 @@ class NetRadio():
 		except:
 			sFile = sys.executable
 		return os.path.dirname(sFile)
+		
+	def quit(self):
+		self.player.stop()
+		pygame.quit()
+		sys.exit()		
