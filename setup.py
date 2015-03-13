@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
 	name='netradio',
-	version='0.1.0',
+	version='0.3.0',
 	description='A very simple streaming audio player for the Raspberry Pi - early alpha',
 	url='http://github.com/harrisclinton/netradio',
 	author='Chris Harrington',

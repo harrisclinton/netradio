@@ -95,8 +95,6 @@ class Player():
             self.level_l = min(max(0, (100 - int(round(struct.get_value('peak')[0] * -2)))),100)
             self.level_r = min(max(0, (100 - int(round(struct.get_value('peak')[1])) * -2)),100)
 
-        
-        
     def stop(self):
         
         self.playbin.set_state(Gst.State.NULL)
