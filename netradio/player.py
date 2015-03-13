@@ -1,23 +1,33 @@
 from gi.repository import GObject, Gst, GLib
-import threading, math
+import threading, math, platform
 
 """
-An abstraction class for the NetRadio class to separate
-player functions so that the NetRadio class itself
+A audio player class for the Radio class to separate
+player functions so that the Radio class itself
 does not depend on a particular playback library
 
-v. 0.1.0 2015.3.7
+v. 0.1.1 2015.3.7
 Chris Harrington
 chris.harrington.jp@gmail.com
+
+To Do:
+*Process other messages besides level
+*particularly to handle audio file playback better
+*Possibly handle a neutral playlist format?
 
 """
 
 class Player():
     
-    def __init__(self, is_arm):
+    def __init__(self):
 
         GObject.threads_init()
         Gst.init(None)
+
+        is_arm = False #Flag true when run on Arm v6l machine
+        
+        if platform.machine() == 'armv6l':
+            is_arm = True
 
         self.playbin = Gst.ElementFactory.make('playbin', None)
         
@@ -39,7 +49,7 @@ class Player():
         level = Gst.ElementFactory.make('level', None)
 
         #Create a bin as a dummy sink to contain the level and actual sink
-        dummy_sink = Gst.Bin.new()
+        dummy_sink = Gst.Bin.new("dummysink")
         #Add the level and sink
         dummy_sink.add(level)
         dummy_sink.add(sink)
